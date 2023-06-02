@@ -38,12 +38,51 @@
         color: black;
         }
 
+        .bg-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 0;
+  opacity: 1;
+}
+
+.bg-video__content {
+  height: 100%;
+  width: 100%;
+  object-fit: cover; 
+  
+}
+#clickArea{
+    z-index: 1;
+}
+#message{
+    z-index: 1;
+}
+#reactionTime{
+    z-index: 1;
+}
+#copyButton{
+    z-index: 1;
+}
+#surveyLink{
+    z-index: 1;
+}
+#instructions{
+    z-index: 1;
+}
+
+
+
+
     </style>
     <script>
         window.onload = function() {
             let startTime, canClick = false, testCount = 0;
             let targetTime = 0;
             let count = 0;
+            let isPlaying = false;
             const background = document.getElementById('background');
             const clickArea = document.getElementById('clickArea');
             const message = document.getElementById('message');
@@ -56,7 +95,7 @@
             const startListening = () => {
                 clickArea.addEventListener('click', handleClick);
                 message.innerText = "Start to click";
-                clickArea.style.backgroundColor = 'black';
+                clickArea.style.backgroundColor = 'white';
             };
             const notificationBox = document.getElementById('notificationBox');
 
@@ -111,10 +150,14 @@
                         clickArea.removeEventListener('click', handleClick);
                         count++;
                         if (count === 3){
+                            audio.pause();
+                        }
+                        if (count === 4){
                             displayTimes();
                         }
+                        if (!(count === 4)){
                         startListening();
-                        
+                        }
                         
                     } else {
                         resetTest();
@@ -124,7 +167,7 @@
                     message.innerText = "Click when green, click to try again";
                 } else if (clickArea.style.backgroundColor === 'blue') {
                     resetTest();
-                } else if (clickArea.style.backgroundColor === 'black') {
+                } else if (clickArea.style.backgroundColor === 'white') {
                     if (count === 1){
                         alert();
                     }
@@ -132,16 +175,21 @@
                         audio.play();
                     }
                     if (count === 3){
-                        audio.stop();
+                     document.getElementById('myVideo').play();   
+                        
                     }
                     resetTest();
+                    
                 }
+               
+
             };
 
             const displayTimes = () => {
                 copyButton.style.display = 'block';
                 surveyLink.style.display = 'block';
                 instructions.style.display = 'block';
+
             };
 
             copyButton.onclick = () => {
@@ -200,6 +248,22 @@
                             // 밖에서 선언한 interval을 안에서 중지시킬 수 있음
                         }
                         }, 500)
+                        var interval4 = setInterval(function() {
+                        if (count === 1) {
+                            showNotification();
+                        } else {
+                            clearInterval(interval4) 
+                            // 밖에서 선언한 interval을 안에서 중지시킬 수 있음
+                        }
+                        }, 500)
+                        var interval5 = setInterval(function() {
+                        if (count === 1) {
+                            showNotification();
+                        } else {
+                            clearInterval(interval5) 
+                            // 밖에서 선언한 interval을 안에서 중지시킬 수 있음
+                        }
+                        }, 500)
                 }
             }
             startListening();
@@ -210,17 +274,23 @@
 <body>
     <div id="background" style="width: 100vw; height: 100vh; background: white; display: flex; justify-content: center; align-items: center; flex-direction: column;">
         <div id="clickArea" style="width: 200px; height: 200px; background: red;"></div>
-        <div id="message"></div>
-        <div id="reactionTime"></div>
-        <button id="copyButton" style="display: none;">Copy Times</button>
-        <a id="surveyLink" style="display: none;" href="https://yoursurveylink.com">Go to survey</a>
-        <p id="instructions" style="display: none;">To submit your records, click on the 'Copy Times' button to copy your reaction times. Then, click on the 'Go to survey' link to open the survey. In the survey, paste your reaction times into the appropriate field.</p>
+        <div id="message" style="background: white; padding: 20px;"></div>
+        <div id="reactionTime"  ></div>
+        <button id="copyButton" style="display: none; background: white; padding: 20px;">결과 복사</button>
+        <a id="surveyLink" style="display: none; background: white; padding: 20px; " href="https://forms.gle/kTk55owwqdbTCBAH8">제출하기</a>
+        <p id="instructions" style="display: none; background: white; padding: 20px; ">결과 복사 버튼을 누른 뒤, 위의 결과 제출하기 버튼을 눌러 설문조사로 이동해 주세요. 설문조사에 결과를 붙여넣고 제출해 주시면 됩니다. 조사에 응해주셔서 감사합니다.</p>
     </div>
     <div id="notificationBox" class="notification">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
         <strong>Notification!</strong> This is an annoying notification.
       </div>
-      <audio id="myAudio" src="audio.mp3" preload="auto"></audio>
+      <audio id="myAudio" src="music.mp3" preload="auto"></audio>
+      <div class="bg-video">
+        <video class="bg-video__content" id="myVideo">
+          <source src="video.mp4">
+          Your browser is not supported!
+        </video>
+      </div>
 </body>
 </html>
 
