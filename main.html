@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reaction Time Test</title>
+    <style>
+        body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+    </style>
+    <script>
+window.onload = function() {
+    let startTime, canClick = false, testCount = 0;
+    let targetTime = 0; // The time when the screen should turn green
+    const background = document.getElementById('background');
+    const clickArea = document.getElementById('clickArea');
+    const message = document.getElementById('message');
+    const reactionTime = document.getElementById('reactionTime');
+
+    const startListening = () => {
+        clickArea.addEventListener('click', handleClick);
+        message.innerText = "Start to click";
+        clickArea.style.backgroundColor = 'black';
+    };
+
+    const handleClick = () => {
+        if (clickArea.style.backgroundColor === 'green' && canClick) {
+            const endTime = new Date().getTime();
+            reactionTime.innerText = 'Your reaction time is ' + (endTime - startTime) + ' ms';
+            canClick = false;
+            testCount++;
+            if (testCount % 5 === 0) {
+                clickArea.removeEventListener('click', handleClick);
+                startListening();
+            } else {
+                resetTest();
+            }
+        } else if (clickArea.style.backgroundColor === 'red') {
+            clickArea.style.backgroundColor = 'blue';
+            message.innerText = "Click when green, click to try again";
+        } else if (clickArea.style.backgroundColor === 'blue') {
+            resetTest();
+        } else if (clickArea.style.backgroundColor === 'black') {
+            resetTest();
+        }
+    };
+
+    const resetTest = () => {
+        clickArea.style.backgroundColor = 'red';
+        message.innerText = "Click on green";
+        background.style.backgroundColor = 'white';
+        targetTime = Date.now() + Math.floor(Math.random() * 2000) + 2000;
+        checkColorChange();
+    };
+
+    const checkColorChange = () => {
+        if (Date.now() >= targetTime) {
+            clickArea.style.backgroundColor = 'green';
+            message.innerText = "Click!";
+            startTime = new Date().getTime();
+            canClick = true;
+        } else {
+            setTimeout(checkColorChange, 100);
+        }
+    };
+
+    startListening();
+};
+
+    </script>
+</head>
+<body>
+    <div id="background" style="width: 100vw; height: 100vh; background: white; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+        <div id="clickArea" style="width: 200px; height: 200px; background: red;"></div>
+        <div id="message"></div>
+        <div id="reactionTime"></div>
+    </div>
+</body>
+</html>
