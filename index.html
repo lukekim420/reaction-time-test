@@ -91,11 +91,12 @@
             const copyButton = document.getElementById('copyButton');
             const surveyLink = document.getElementById('surveyLink');
             const instructions = document.getElementById('instructions');
+            const video = document.getElementById('myVideo');
             const audio = document.getElementById('myAudio');
             const startListening = () => {
                 clickArea.addEventListener('click', handleClick);
-                message.innerText = "Start to click";
-                clickArea.style.backgroundColor = 'white';
+                message.innerText = "Click to start";
+                clickArea.style.backgroundColor = 'black';
             };
             const notificationBox = document.getElementById('notificationBox');
 
@@ -167,7 +168,7 @@
                     message.innerText = "Click when green, click to try again";
                 } else if (clickArea.style.backgroundColor === 'blue') {
                     resetTest();
-                } else if (clickArea.style.backgroundColor === 'white') {
+                } else if (clickArea.style.backgroundColor === 'black') {
                     if (count === 1){
                         alert();
                     }
@@ -175,8 +176,9 @@
                         audio.play();
                     }
                     if (count === 3){
-                     document.getElementById('myVideo').play();   
-                        
+                    video.style.display = 'block';
+                    document.getElementById('myVideo').play();   
+                     
                     }
                     resetTest();
                     
@@ -285,8 +287,8 @@
         <strong>Notification!</strong> This is an annoying notification.
       </div>
       <audio id="myAudio" src="music.mp3" preload="auto"></audio>
-      <div class="bg-video">
-        <video class="bg-video__content" id="myVideo">
+      <div class="bg-video" >
+        <video class="bg-video__content" id="myVideo" style="display: none;" loop>
           <source src="video.mp4">
           Your browser is not supported!
         </video>
