@@ -95,7 +95,12 @@
             const audio = document.getElementById('myAudio');
             const startListening = () => {
                 clickArea.addEventListener('click', handleClick);
-                message.innerText = "Click to start";
+                if (count === 0){
+                    message.innerText = '꼭 소리를 켜거나, 이어폰을 착용하고 시행해 주세요! 검은 사각형을 누르면 시작됩니다.'
+                }
+                else{
+                message.innerText = "눌러서 시작하세요.";
+                }
                 clickArea.style.backgroundColor = 'black';
             };
             const notificationBox = document.getElementById('notificationBox');
@@ -165,7 +170,7 @@
                     }
                 } else if (clickArea.style.backgroundColor === 'red') {
                     clickArea.style.backgroundColor = 'blue';
-                    message.innerText = "Click when green, click to try again";
+                    message.innerText = "초록색일 때 눌러야 합니다. 눌러서 다시 시도하세요.";
                 } else if (clickArea.style.backgroundColor === 'blue') {
                     resetTest();
                 } else if (clickArea.style.backgroundColor === 'black') {
@@ -200,7 +205,7 @@
 
             const resetTest = () => {
                 clickArea.style.backgroundColor = 'red';
-                message.innerText = "Click on green";
+                message.innerText = "초록색이 되면 누르세요.";
                 background.style.backgroundColor = 'white';
                 targetTime = Date.now() + Math.floor(Math.random() * 2000) + 2000;
                 checkColorChange();
@@ -209,7 +214,7 @@
             const checkColorChange = () => {
                 if (Date.now() >= targetTime) {
                     clickArea.style.backgroundColor = 'green';
-                    message.innerText = "Click!";
+                    message.innerText = "누르세요!";
                     startTime = new Date().getTime();
                     canClick = true;
                 } else {
