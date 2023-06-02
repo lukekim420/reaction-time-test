@@ -4,72 +4,207 @@
     <title>Reaction Time Test</title>
     <style>
         body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-}
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .notification {
+        width: 50px;
+        height: 50px;
+        padding: 5px;
+        background-color: #f44336;
+        color: white;
+        position: absolute;
+        z-index: 2;
+        visibility: hidden;
+        text-align: center;
+        line-height: 50px;
+        }
+
+
+        .notification .closebtn {
+        margin-left: 15px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        }
+
+        .notification .closebtn:hover {
+        color: black;
+        }
 
     </style>
     <script>
-window.onload = function() {
-    let startTime, canClick = false, testCount = 0;
-    let targetTime = 0; // The time when the screen should turn green
-    const background = document.getElementById('background');
-    const clickArea = document.getElementById('clickArea');
-    const message = document.getElementById('message');
-    const reactionTime = document.getElementById('reactionTime');
+        window.onload = function() {
+            let startTime, canClick = false, testCount = 0;
+            let targetTime = 0;
+            let count = 0;
+            const background = document.getElementById('background');
+            const clickArea = document.getElementById('clickArea');
+            const message = document.getElementById('message');
+            const reactionTime = document.getElementById('reactionTime');
+            const timesArray = [];
+            const copyButton = document.getElementById('copyButton');
+            const surveyLink = document.getElementById('surveyLink');
+            const instructions = document.getElementById('instructions');
+            const audio = document.getElementById('myAudio');
+            const startListening = () => {
+                clickArea.addEventListener('click', handleClick);
+                message.innerText = "Start to click";
+                clickArea.style.backgroundColor = 'black';
+            };
+            const notificationBox = document.getElementById('notificationBox');
 
-    const startListening = () => {
-        clickArea.addEventListener('click', handleClick);
-        message.innerText = "Start to click";
-        clickArea.style.backgroundColor = 'black';
-    };
+            function showNotification() {
+    // Get the dimensions and position of the click area
+    const clickAreaRect = clickArea.getBoundingClientRect();
 
-    const handleClick = () => {
-        if (clickArea.style.backgroundColor === 'green' && canClick) {
-            const endTime = new Date().getTime();
-            reactionTime.innerText = 'Your reaction time is ' + (endTime - startTime) + ' ms';
-            canClick = false;
-            testCount++;
-            if (testCount % 5 === 0) {
-                clickArea.removeEventListener('click', handleClick);
-                startListening();
-            } else {
-                resetTest();
+    // Calculate the available space for the notification box
+    const availableWidth = window.innerWidth - 50;  // -50 to accommodate the width of the notification box
+    const availableHeight = window.innerHeight - 50;  // -50 to accommodate the height of the notification box
+
+    // Generate random positions for the notification box
+    let randomX = Math.floor(Math.random() * availableWidth);
+    let randomY = Math.floor(Math.random() * availableHeight);
+
+    // Check if the random position collides with the click area
+    // If it does, generate a new random position
+    while ((randomX > clickAreaRect.left && randomX < clickAreaRect.right) &&
+           (randomY > clickAreaRect.top && randomY < clickAreaRect.bottom)) {
+        randomX = Math.floor(Math.random() * availableWidth);
+        randomY = Math.floor(Math.random() * availableHeight);
+    }
+
+    // Create a new notification box
+    const notificationBox = document.createElement('div');
+    notificationBox.classList.add('notification');
+    notificationBox.style.left = randomX + 'px';
+    notificationBox.style.top = randomY + 'px';
+    notificationBox.style.visibility = 'visible';  // Make sure the box is visible
+    notificationBox.innerHTML = '<strong>!</strong>';
+
+    // Add the notification box to the body
+    document.body.appendChild(notificationBox);
+
+    // After 0.5 seconds, remove the notification box
+    setTimeout(() => {
+        notificationBox.remove();
+    }, 500);
+}
+
+
+            // Call the function to show the notification
+            
+            const handleClick = () => {
+                if (clickArea.style.backgroundColor === 'green' && canClick) {
+                    const endTime = new Date().getTime();
+                    const reaction = endTime - startTime;
+                    timesArray.push(reaction);
+                    canClick = false;
+                    testCount++;
+                    if (testCount % 1 === 0) {
+                        clickArea.removeEventListener('click', handleClick);
+                        count++;
+                        if (count === 3){
+                            displayTimes();
+                        }
+                        startListening();
+                        
+                        
+                    } else {
+                        resetTest();
+                    }
+                } else if (clickArea.style.backgroundColor === 'red') {
+                    clickArea.style.backgroundColor = 'blue';
+                    message.innerText = "Click when green, click to try again";
+                } else if (clickArea.style.backgroundColor === 'blue') {
+                    resetTest();
+                } else if (clickArea.style.backgroundColor === 'black') {
+                    if (count === 1){
+                        alert();
+                    }
+                    if (count === 2){
+                        audio.play();
+                    }
+                    if (count === 3){
+                        audio.stop();
+                    }
+                    resetTest();
+                }
+            };
+
+            const displayTimes = () => {
+                copyButton.style.display = 'block';
+                surveyLink.style.display = 'block';
+                instructions.style.display = 'block';
+            };
+
+            copyButton.onclick = () => {
+                navigator.clipboard.writeText(timesArray.join(', '));
+            };
+
+            const resetTest = () => {
+                clickArea.style.backgroundColor = 'red';
+                message.innerText = "Click on green";
+                background.style.backgroundColor = 'white';
+                targetTime = Date.now() + Math.floor(Math.random() * 2000) + 2000;
+                checkColorChange();
+            };
+
+            const checkColorChange = () => {
+                if (Date.now() >= targetTime) {
+                    clickArea.style.backgroundColor = 'green';
+                    message.innerText = "Click!";
+                    startTime = new Date().getTime();
+                    canClick = true;
+                } else {
+                    setTimeout(checkColorChange, 100);
+                }
+            };
+            const alert = () => {
+                if (count === 1){
+                    var interval = setInterval(function() {
+                        if (count === 1) {
+                            showNotification();
+                        } else {
+                            clearInterval(interval) 
+                            // 밖에서 선언한 interval을 안에서 중지시킬 수 있음
+                        }
+                        }, 500)
+                        var interval1 = setInterval(function() {
+                        if (count === 1) {
+                            showNotification();
+                        } else {
+                            clearInterval(interval1) 
+                            // 밖에서 선언한 interval을 안에서 중지시킬 수 있음
+                        }
+                        }, 500)
+                        var interval2 = setInterval(function() {
+                        if (count === 1) {
+                            showNotification();
+                        } else {
+                            clearInterval(interval2) 
+                            // 밖에서 선언한 interval을 안에서 중지시킬 수 있음
+                        }
+                        }, 500)
+                        var interval3 = setInterval(function() {
+                        if (count === 1) {
+                            showNotification();
+                        } else {
+                            clearInterval(interval3) 
+                            // 밖에서 선언한 interval을 안에서 중지시킬 수 있음
+                        }
+                        }, 500)
+                }
             }
-        } else if (clickArea.style.backgroundColor === 'red') {
-            clickArea.style.backgroundColor = 'blue';
-            message.innerText = "Click when green, click to try again";
-        } else if (clickArea.style.backgroundColor === 'blue') {
-            resetTest();
-        } else if (clickArea.style.backgroundColor === 'black') {
-            resetTest();
-        }
-    };
-
-    const resetTest = () => {
-        clickArea.style.backgroundColor = 'red';
-        message.innerText = "Click on green";
-        background.style.backgroundColor = 'white';
-        targetTime = Date.now() + Math.floor(Math.random() * 2000) + 2000;
-        checkColorChange();
-    };
-
-    const checkColorChange = () => {
-        if (Date.now() >= targetTime) {
-            clickArea.style.backgroundColor = 'green';
-            message.innerText = "Click!";
-            startTime = new Date().getTime();
-            canClick = true;
-        } else {
-            setTimeout(checkColorChange, 100);
-        }
-    };
-
-    startListening();
-};
-
+            startListening();
+        };
+        
     </script>
 </head>
 <body>
@@ -77,6 +212,16 @@ window.onload = function() {
         <div id="clickArea" style="width: 200px; height: 200px; background: red;"></div>
         <div id="message"></div>
         <div id="reactionTime"></div>
+        <button id="copyButton" style="display: none;">Copy Times</button>
+        <a id="surveyLink" style="display: none;" href="https://yoursurveylink.com">Go to survey</a>
+        <p id="instructions" style="display: none;">To submit your records, click on the 'Copy Times' button to copy your reaction times. Then, click on the 'Go to survey' link to open the survey. In the survey, paste your reaction times into the appropriate field.</p>
     </div>
+    <div id="notificationBox" class="notification">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+        <strong>Notification!</strong> This is an annoying notification.
+      </div>
+      <audio id="myAudio" src="audio.mp3" preload="auto"></audio>
 </body>
 </html>
+
+
