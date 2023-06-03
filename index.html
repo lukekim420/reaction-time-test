@@ -171,6 +171,7 @@
                 } else if (clickArea.style.backgroundColor === 'red') {
                     clickArea.style.backgroundColor = 'blue';
                     message.innerText = "초록색일 때 눌러야 합니다. 눌러서 다시 시도하세요.";
+                    targetTime = Date.now() + 1000000000
                 } else if (clickArea.style.backgroundColor === 'blue') {
                     resetTest();
                 } else if (clickArea.style.backgroundColor === 'black') {
