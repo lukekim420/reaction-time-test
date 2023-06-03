@@ -159,6 +159,7 @@
                             audio.pause();
                         }
                         if (count === 4){
+                            document.getElementById('myVideo').pause();   
                             displayTimes();
                         }
                         if (!(count === 4)){
@@ -194,11 +195,19 @@
             };
 
             const displayTimes = () => {
-                copyButton.style.display = 'block';
-                surveyLink.style.display = 'block';
-                instructions.style.display = 'block';
+    copyButton.style.display = 'block';
+    surveyLink.style.display = 'block';
+    instructions.style.display = 'block';
+    reactionTime.style.display = 'block';
 
-            };
+    // Calculate the mean of the first five elements
+    const sum = timesArray.slice(0, 5).reduce((a, b) => a + b, 0);
+    const mean = sum / 5;
+
+    // Display the mean
+    reactionTime.innerText = "반응속도 : " + mean + " ms";
+};
+
 
             copyButton.onclick = () => {
                 navigator.clipboard.writeText(timesArray.join(', '));
@@ -283,10 +292,11 @@
     <div id="background" style="width: 100vw; height: 100vh; background: white; display: flex; justify-content: center; align-items: center; flex-direction: column;">
         <div id="clickArea" style="width: 200px; height: 200px; background: red;"></div>
         <div id="message" style="background: white; padding: 20px;"></div>
-        <div id="reactionTime"  ></div>
+        <p id="instructions" style="display: none; background: white; padding: 20px; ">결과 복사 버튼을 누른 뒤, 위의 결과 제출하기 버튼을 눌러 설문조사로 이동해 주세요. 설문조사에 결과를 붙여넣고 제출해 주시면 됩니다. 조사에 응해주셔서 감사합니다.</p>
+        <div id="reactionTime" style="display: none; background: white; padding: 20px;" ></div>
         <button id="copyButton" style="display: none; background: white; padding: 20px;">결과 복사</button>
         <a id="surveyLink" style="display: none; background: white; padding: 20px; " href="https://forms.gle/24DkXoUzkeaHgTwb8">제출하기</a>
-        <p id="instructions" style="display: none; background: white; padding: 20px; ">결과 복사 버튼을 누른 뒤, 위의 결과 제출하기 버튼을 눌러 설문조사로 이동해 주세요. 설문조사에 결과를 붙여넣고 제출해 주시면 됩니다. 조사에 응해주셔서 감사합니다.</p>
+
     </div>
     <div id="notificationBox" class="notification">
         <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
